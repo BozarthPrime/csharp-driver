@@ -13,6 +13,11 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
+/*
+ * Updated 10-14-2013
+ * Author: Joseph Bozarth
+ * Description: Added GetName functionality
+ */
 ﻿using System.Collections.Generic;
 using System.Collections;
 using System;
@@ -23,7 +28,9 @@ namespace Cassandra
     {
         readonly byte[][] _columns;
         readonly Dictionary<string, int> _columnIdxes;
+        private string[] _columnNameLookup;
         RowSetMetadata _metadata;
+
         internal Row(OutputRows rawrows, Dictionary<string, int> columnIdxes)
         {
             var l = new List<byte[]>();
@@ -46,30 +53,27 @@ namespace Cassandra
                     break;
             }
             _columns = l.ToArray();
+
+            //Added internal hash to quickly retive names for columns
+            _columnNameLookup = new string[columnIdxes.Count];
+
+            foreach (KeyValuePair<string, int> cur in columnIdxes)
+                _columnNameLookup[cur.Value] = cur.Key;
         }
 
         public int Length
         {
-            get
-            {
-                return _columns.Length;
-            }
+            get { return _columns.Length; }
         }
 
         public object this[int idx]
         {
-            get
-            {
-                return _columns[idx] == null ? null : _metadata.ConvertToObject(idx, _columns[idx]);
-            }
+            get { return _columns[idx] == null ? null : _metadata.ConvertToObject(idx, _columns[idx]); }
         }
 
         public object this[string name]
         {
-            get
-            {
-                return this[_columnIdxes[name]];
-            }
+            get { return this[_columnIdxes[name]]; }
         }
 
         public bool IsNull(string name)
@@ -80,6 +84,11 @@ namespace Cassandra
         public bool IsNull(int idx)
         {
             return _columns[idx] == null;
+        }
+
+        public string GetName(int idx)
+        {
+            return idx < _columnNameLookup.Length ? _columnNameLookup[idx] : null;
         }
 
         public object GetValue(Type tpy, int idx)

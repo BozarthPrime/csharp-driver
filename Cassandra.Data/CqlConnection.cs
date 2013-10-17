@@ -13,6 +13,12 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
+/*
+ * Updated 10-17-2013
+ * Author: Joseph Bozarth
+ * Description: Added ability to specify cluter name of the connection. This solves the issue with connecting
+ * to multiple databases as they will no longet all use the same cluster name.
+*/
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,14 +38,16 @@ namespace Cassandra.Data
 
         internal Session ManagedConnection = null;
 
-        public CqlConnection()
+        public CqlConnection(string clusterName = null)
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder();
+            _connectionStringBuilder.ClusterName = !String.IsNullOrWhiteSpace(clusterName) ? clusterName : Guid.NewGuid().ToString();
         }
 
-        public CqlConnection(string connectionString)
+        public CqlConnection(string connectionString, string clusterName = null)
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder(connectionString);
+            _connectionStringBuilder.ClusterName = !String.IsNullOrWhiteSpace(clusterName) ? clusterName : Guid.NewGuid().ToString();
         }
 
         private Dictionary<string, string> getCredentials(string auth)
