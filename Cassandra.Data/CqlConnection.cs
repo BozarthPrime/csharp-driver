@@ -41,13 +41,17 @@ namespace Cassandra.Data
         public CqlConnection()
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder();
-            _connectionStringBuilder.ClusterName = Guid.NewGuid().ToString();
         }
 
-        public CqlConnection(string connectionString, string clusterName = null)
+        public CqlConnection(string connectionString)
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder(connectionString);
-            _connectionStringBuilder.ClusterName = !String.IsNullOrWhiteSpace(clusterName) ? clusterName : Guid.NewGuid().ToString();
+        }
+
+        public CqlConnection(string connectionString, string clusterName)
+        {
+            _connectionStringBuilder = new CassandraConnectionStringBuilder(connectionString);
+            _connectionStringBuilder.ClusterName = clusterName;
         }
 
         private Dictionary<string, string> getCredentials(string auth)
