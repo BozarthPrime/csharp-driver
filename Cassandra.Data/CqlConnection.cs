@@ -41,11 +41,13 @@ namespace Cassandra.Data
         public CqlConnection()
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder();
+            _connectionStringBuilder.ClusterName = Guid.NewGuid().ToString();
         }
 
         public CqlConnection(string connectionString)
         {
             _connectionStringBuilder = new CassandraConnectionStringBuilder(connectionString);
+            _connectionStringBuilder.ClusterName = Guid.NewGuid().ToString();
         }
 
         public CqlConnection(string connectionString, string clusterName)
